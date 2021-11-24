@@ -1,10 +1,31 @@
 package main
 
 import (
+    "bufio"
     "fmt"
-    "io/ioutil"
     "os"
+    "strings"
+    "strconv"
 )
+
+type headerColumn struct {
+  name string
+  dataType string
+  questionColumn int
+  questionLine int
+  questionColor int
+  fieldColumn int
+  fieldLine int
+  fieldType string
+  fieldWidth int
+  entryFieldColor int
+  description string
+}
+
+type header struct {
+  columnsCount int
+  columns []headerColumn
+}
 
 func main() {
   fmt.Println("App starting...")
@@ -15,6 +36,7 @@ func main() {
 
   filename := os.Args[1]
   loadFile(filename)
+
 }
 
 func check(e error) {
@@ -24,12 +46,51 @@ func check(e error) {
 }
 
 func loadFile(filename string) {
-  dat, err := ioutil.ReadFile(filename)
+  file, err := os.Open(filename)
   check(err)
-  fmt.Print(string(dat))
+
+  scanner := bufio.NewScanner(file)
+  scanner.Split(bufio.ScanLines)
+  var text []string
+
+  for scanner.Scan() {
+      text = append(text, scanner.Text())
+  }
+
+  file.Close()
+
+  header := newHeader(text)
+  fmt.Println("**** Header loaded ****")
+  fmt.Println(header)
+
 }
 
-/*func loadRECFile(filename string, encoding string) {
-  recEof := "\r\n"
-  
-}*/
+/*
+ * Builds a new header based on the incoming
+ * string array.
+ */
+func newHeader(rows []string) *header {
+    // Get columns count
+    row := strings.Fields(rows[0])
+    columnsCount, err := strconv.Atoi(row[0])
+    check(err)
+
+    h := header{columnsCount: columnsCount}
+
+    for i := 1; i <= h.columnsCount; i++ {
+        row := rows[i]
+        h.columns= append(h.columns, newHeaderColumn(row))
+    }
+
+    return &h
+}
+
+/*
+ * Builds a new headerColumn based on the incoming
+ * string.
+ */
+func newHeaderColumn(row string) headerColumn {
+  words := strings.Fields(row)
+  hc := headerColumn{name: words[0], dataType: words[1], }
+  return hc
+}
