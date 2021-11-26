@@ -8,6 +8,11 @@ import (
     "strconv"
 )
 
+const (
+  TEXT string   = "_"
+  NUMBER string = "#"
+)
+
 type headerColumn struct {
   name string
   dataType string
@@ -60,6 +65,9 @@ func loadFile(filename string) {
   file.Close()
 
   header := newHeader(text)
+
+
+
   fmt.Println("**** Header loaded ****")
   fmt.Println(header)
 
@@ -91,6 +99,22 @@ func newHeader(rows []string) *header {
  */
 func newHeaderColumn(row string) headerColumn {
   words := strings.Fields(row)
-  hc := headerColumn{name: words[0], dataType: words[1], }
+
+  if len(words) < 10 {
+    panic("Not a normal REC header")
+  }
+
+  hc := headerColumn{}
+  hc.name = words[0]
+  hc.dataType = words[1]
+  hc.questionColumn, _ = strconv.Atoi(words[2])
+  hc.questionColor, _ = strconv.Atoi(words[3])
+  hc.fieldColumn, _ = strconv.Atoi(words[4])
+  hc.fieldLine, _ = strconv.Atoi(words[5])
+  hc.fieldType = words[6]
+  hc.fieldWidth, _ = strconv.Atoi(words[7])
+  hc.entryFieldColor, _ = strconv.Atoi(words[8])
+  hc.description = words[9]
+
   return hc
 }
