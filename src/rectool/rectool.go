@@ -171,7 +171,7 @@ func newBody(h RECHeader, rows []string) []Record {
 			// Last position reaches end of line
 			var fieldEndPosition int
 			if (fieldIndex + column.fieldWidth) >= h.length {
-				fieldEndPosition = fieldIndex + column.fieldWidth -1
+				fieldEndPosition = fieldIndex + column.fieldWidth - 1
 			} else {
 				fieldEndPosition = fieldIndex + column.fieldWidth
 			}
