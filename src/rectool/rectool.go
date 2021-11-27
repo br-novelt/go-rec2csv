@@ -38,8 +38,7 @@ type Column struct {
 	fieldWidth      int
 	entryFieldColor int
 	description     string
-	intValue        int
-	strValue        string
+	value           string
 }
 
 type RECHeader struct {
@@ -169,15 +168,18 @@ func newBody(h RECHeader, rows []string) []Record {
 				continue
 			}
 
+			// Last position reaches end of line
+			var fieldEndPosition int
+			if (fieldIndex + column.fieldWidth) >= h.length {
+				fieldEndPosition = fieldIndex + column.fieldWidth -1
+			} else {
+				fieldEndPosition = fieldIndex + column.fieldWidth
+			}
+
 			fieldStartPosition := fieldIndex
-			fieldEndPosition := fieldIndex + column.fieldWidth - 1
 			fieldValue := chunk[fieldStartPosition:fieldEndPosition]
 
-			if column.name[0:1] == TEXT {
-				column.strValue = fieldValue
-			} else {
-				column.intValue, _ = strconv.Atoi(fieldValue)
-			}
+			column.value = strings.Trim(fieldValue, " ")
 
 			fieldIndex += column.fieldWidth
 			record.columns = append(record.columns, column)
@@ -228,8 +230,9 @@ func (f RECFile) ToCSV() {
 }
 
 func (r Column) getStringValue() string {
-	if r.dataType[0:1] == NUMBER {
-		return strconv.Itoa(r.intValue)
-	}
-	return r.strValue
+	//if r.name[0:1] == TEXT {
+	//	return r.strValue
+	//}
+	//return strconv.Itoa(r.intValue)
+	return r.value
 }
