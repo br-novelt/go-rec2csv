@@ -174,10 +174,6 @@ func newBody(h *RECHeader, rows []string) *[]Record {
 		rowEndPosition := rowIndex*h.length + h.length - 1
 		chunk := data[rowStartPosition:rowEndPosition]
 
-		fmt.Printf(InfoColor, "$$" + chunk + "$$")
-		fmt.Println("")
-		fmt.Println("")
-
 		fieldIndex := 0
 		for i := 0; i < h.count; i++ {
 			column := h.columns[i]
@@ -196,12 +192,6 @@ func newBody(h *RECHeader, rows []string) *[]Record {
 			} else {
 				column.intValue, _ = strconv.Atoi(fieldValue)
 			}
-
-			//fmt.Printf(DebugColor, strconv.Itoa(fieldStartPosition) + ":" + strconv.Itoa(fieldEndPosition))
-			//fmt.Println("")
-			//fmt.Printf(DebugColor, r.name + " ==> $$" + chunk[fieldStartPosition:fieldEndPosition] + "$$")
-			//fmt.Println("")
-			//fmt.Println("")
 
 			fieldIndex += column.fieldWidth
 			record.columns = append(record.columns, column)
