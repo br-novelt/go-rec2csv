@@ -2,6 +2,7 @@ package rectool
 
 import (
 	"bufio"
+	"encoding/csv"
 	"fmt"
 	"os"
 	"strconv"
@@ -81,7 +82,7 @@ func Load(filename string) RECFile {
 	header := newHeader(text)
 	body := newBody(header, text)
 
-	content := RECFile{Header: header, Records: body}
+	content := RECFile{Header: header, Records: body, Filename: filename}
 
 	//fmt.Printf(InfoColor, "********************************************************")
 	//fmt.Println("")
@@ -202,4 +203,43 @@ func newBody(h RECHeader, rows []string) []Record {
 
 func (f RECFile) ToCSV() {
 	fmt.Println(f)
+	csvFilename := f.Filename + ".csv"
+
+	file, err := os.Create(csvFilename)
+	check(err)
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	var data = [][]string{}
+
+	var row []string
+	for _, column := range f.Header.columns {
+		if column.fieldWidth == 0 {
+			continue
+		}
+		row = append(row, column.name[1:])
+	}
+	data = append(data, row)
+
+	for _, record := range f.Records {
+		var row []string
+		for _, column := range record.columns {
+			row = append(row, column.getStringValue())
+		}
+		data = append(data, row)
+	}
+
+	for _, value := range data {
+		err := writer.Write(value)
+		check(err)
+	}
+}
+
+func (r Column) getStringValue() string {
+	if r.dataType[0:1] == NUMBER {
+		return strconv.Itoa(r.intValue)
+	}
+	return r.strValue
 }
