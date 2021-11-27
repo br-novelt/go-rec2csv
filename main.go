@@ -14,5 +14,6 @@ func main() {
 	}
 
 	filename := os.Args[1]
-	rectool.Load(filename)
+	recfile := rectool.Load(filename)
+	recfile.ToCSV()
 }

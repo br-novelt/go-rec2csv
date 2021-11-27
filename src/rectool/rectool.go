@@ -63,7 +63,7 @@ func check(e error) {
 	}
 }
 
-func Load(filename string) {
+func Load(filename string) RECFile {
 	file, err := os.Open(filename)
 	check(err)
 
@@ -81,6 +81,8 @@ func Load(filename string) {
 	header := newHeader(text)
 	body := newBody(header, text)
 
+	content := RECFile{Header: header, Records: body}
+
 	//fmt.Printf(InfoColor, "********************************************************")
 	//fmt.Println("")
 	//fmt.Printf(InfoColor, "************************ Header ************************")
@@ -89,22 +91,23 @@ func Load(filename string) {
 	//fmt.Println("")
 	//
 	//fmt.Println(header)
+	//
+	//fmt.Printf(InfoColor, "********************************************************")
+	//fmt.Println("")
+	//fmt.Printf(InfoColor, "************************* Body *************************")
+	//fmt.Println("")
+	//fmt.Printf(InfoColor, "********************************************************")
+	//fmt.Println("")
+	//fmt.Println(body)
 
-	fmt.Printf(InfoColor, "********************************************************")
-	fmt.Println("")
-	fmt.Printf(InfoColor, "************************* Body *************************")
-	fmt.Println("")
-	fmt.Printf(InfoColor, "********************************************************")
-	fmt.Println("")
-	fmt.Println(body)
-
+	return content
 }
 
 /*
  * Builds a new RECHeader based on the incoming
  * string array.
  */
-func newHeader(rows []string) *RECHeader {
+func newHeader(rows []string) RECHeader {
 	row := strings.Fields(rows[0])
 	if len(row) > 2 {
 		panic("Malformed file: first line is wrong")
@@ -122,7 +125,7 @@ func newHeader(rows []string) *RECHeader {
 		h.length += column.fieldWidth
 	}
 
-	return &h
+	return h
 }
 
 /*
@@ -154,17 +157,11 @@ func newHeaderColumn(row string) Column {
 /*
  * Builds a new body based on the incoming string array
  */
-func newBody(h *RECHeader, rows []string) *[]Record {
+func newBody(h RECHeader, rows []string) []Record {
 	var records []Record
-
-	fmt.Printf(InfoColor, strconv.Itoa(h.count))
 
 	dataIndex := h.count + 1
 	data := strings.ReplaceAll(strings.Join(rows[dataIndex:], ""), REC_EOL, "")
-
-	fmt.Print(DebugColor, "Length --> "+strconv.Itoa(h.length))
-	fmt.Println("")
-
 	rowCount := len(data) / h.length
 
 	for rowIndex := 0; rowIndex < rowCount; rowIndex++ {
@@ -200,5 +197,9 @@ func newBody(h *RECHeader, rows []string) *[]Record {
 		records = append(records, record)
 	}
 
-	return &records
+	return records
+}
+
+func (f RECFile) ToCSV() {
+	fmt.Println(f)
 }
