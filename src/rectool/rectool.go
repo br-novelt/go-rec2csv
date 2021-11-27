@@ -60,6 +60,8 @@ type RECFile struct {
 
 func check(e error) {
 	if e != nil {
+		fmt.Printf(ErrorColor, "[ERROR] Something went wrong")
+		fmt.Println("")
 		panic(e)
 	}
 }
@@ -84,22 +86,8 @@ func Load(filename string) RECFile {
 
 	content := RECFile{Header: header, Records: body, Filename: filename}
 
-	//fmt.Printf(InfoColor, "********************************************************")
-	//fmt.Println("")
-	//fmt.Printf(InfoColor, "************************ Header ************************")
-	//fmt.Println("")
-	//fmt.Printf(InfoColor, "********************************************************")
-	//fmt.Println("")
-	//
-	//fmt.Println(header)
-	//
-	//fmt.Printf(InfoColor, "********************************************************")
-	//fmt.Println("")
-	//fmt.Printf(InfoColor, "************************* Body *************************")
-	//fmt.Println("")
-	//fmt.Printf(InfoColor, "********************************************************")
-	//fmt.Println("")
-	//fmt.Println(body)
+	fmt.Printf(InfoColor, "[COMPLETE] REC file loading")
+	fmt.Println("")
 
 	return content
 }
@@ -202,7 +190,6 @@ func newBody(h RECHeader, rows []string) []Record {
 }
 
 func (f RECFile) ToCSV() {
-	fmt.Println(f)
 	csvFilename := f.Filename + ".csv"
 
 	file, err := os.Create(csvFilename)
@@ -235,6 +222,9 @@ func (f RECFile) ToCSV() {
 		err := writer.Write(value)
 		check(err)
 	}
+
+	fmt.Printf(InfoColor, "[COMPLETE] Conversion REC to CSV")
+	fmt.Println("")
 }
 
 func (r Column) getStringValue() string {
