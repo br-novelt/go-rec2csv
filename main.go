@@ -2,7 +2,7 @@ package main
 
 import (
 	"os"
-	"rectool"
+	"github.com/br-novelt/go-rec2csv/src/rectool"
 )
 
 func main() {

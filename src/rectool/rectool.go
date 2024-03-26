@@ -123,9 +123,14 @@ func newHeader(rows []string) RECHeader {
 func newHeaderColumn(row string) Column {
 	words := strings.Fields(row)
 
-	if len(words) < 10 {
-		panic("Malformed REC header")
+	if len(words) < 9 {
+		panic("Malformed REC header. At least 9 columns are required.")
 	}
+
+	// If the last column is empty (description), append an empty string
+	if len(words) < 10 {
+	    words = append(words, "")
+    }
 
 	var hc = Column{}
 	hc.name = words[0]
